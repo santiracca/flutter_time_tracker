@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:timeTracker/app/home_page.dart';
 import 'package:timeTracker/app/sign_in/sign_in_page.dart';
 import 'package:timeTracker/services/auth.dart';
 
 class LandingPage extends StatelessWidget {
-  final AuthBase auth;
-  LandingPage({
-    @required this.auth,
-  });
-
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthBase>(context);
     return StreamBuilder<User>(
       stream: auth.onAuthStateChanged,
       builder: (context, snapshot) {
@@ -22,13 +19,9 @@ class LandingPage extends StatelessWidget {
         }
         User user = snapshot.data;
         if (user == null) {
-          return SignInPage(
-            auth: auth,
-          );
+          return SignInPage();
         }
-        return HomePage(
-          auth: auth,
-        );
+        return HomePage();
       },
     );
   }
