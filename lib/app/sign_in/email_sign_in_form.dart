@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:timeTracker/app/sign_in/validators.dart';
 import 'package:timeTracker/common/form_submit_button.dart';
-import 'package:timeTracker/common/platform_alert_dialog.dart';
+import 'package:timeTracker/common/platform_exception_alert_dialog.dart';
 import 'package:timeTracker/services/auth.dart';
 
 enum EmailSignInFormType { signIn, register }
@@ -38,8 +39,8 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         await auth.createUserWithEmailAndPassword(email, password);
       }
       Navigator.of(context).pop();
-    } catch (e) {
-      PlatformAlertDialog(title: 'Sign in Failed', content: e.toString())
+    } on PlatformException catch (e) {
+      PlatformExceptionAlertDialog(title: 'Sign in Failed', exception: e)
           .show(context);
     } finally {
       setState(() {
@@ -124,6 +125,15 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
           hintText: 'test@test.com',
           errorText: showErrorText ? widget.invalidEmailErrorText : null),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
