@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:timeTracker/app/sign_in/email_sign_in_model.dart';
 import 'package:timeTracker/app/sign_in/validators.dart';
 import 'package:timeTracker/common/form_submit_button.dart';
 import 'package:timeTracker/common/platform_exception_alert_dialog.dart';
 import 'package:timeTracker/services/auth.dart';
 
-enum EmailSignInFormType { signIn, register }
-
-class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidators {
+class EmailSignInFormStateful extends StatefulWidget
+    with EmailAndPasswordValidators {
   @override
   _EmailSignInFormState createState() => _EmailSignInFormState();
 }
 
-class _EmailSignInFormState extends State<EmailSignInForm> {
+class _EmailSignInFormState extends State<EmailSignInFormStateful> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _emailFocusNode = FocusNode();
@@ -26,7 +26,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   String get email => _emailController.text;
   String get password => _passwordController.text;
 
-  void _submit() async {
+  Future<void> _submit() async {
     final auth = Provider.of<AuthBase>(context);
     setState(() {
       _hasSubmitted = true;

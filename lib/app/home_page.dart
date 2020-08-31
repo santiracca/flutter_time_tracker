@@ -6,7 +6,7 @@ import 'package:timeTracker/services/auth.dart';
 class HomePage extends StatelessWidget {
   Future<void> _signout(BuildContext context) async {
     try {
-      final auth = Provider.of<AuthBase>(context);
+      final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signOut();
     } catch (e) {
       print(e);
