@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timeTracker/app/home/jobs/edit_jobs_page.dart';
 import 'package:timeTracker/app/home/jobs/job_list_tile.dart';
+import 'package:timeTracker/app/home/jobs/list_items_builder.dart';
+import 'package:timeTracker/common/firestore_exception_dialog.dart';
 import 'package:timeTracker/common/platform_alert_dialog.dart';
 import 'package:timeTracker/services/auth.dart';
 import 'package:timeTracker/services/database.dart';
@@ -27,6 +30,18 @@ class JobsPage extends StatelessWidget {
     ).show(context);
     if (didRequestSignOut) {
       _signout(context);
+    }
+  }
+
+  Future<void> _delete(BuildContext context, Job job) async {
+    final db = Provider.of<Database>(context, listen: false);
+    try {
+      await db.deleteJob(job);
+    } on FirebaseException catch (e) {
+      FirebaseExceptionAlertDialog(
+        exception: e,
+        title: "Oopps",
+      ).show(context);
     }
   }
 
@@ -58,25 +73,20 @@ class JobsPage extends StatelessWidget {
     return StreamBuilder<List<Job>>(
       stream: database.jobsStream(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final jobs = snapshot.data;
-          final children = jobs
-              .map((job) => JobListTile(
-                    job: job,
-                    onTap: () => EditJobsPage.show(context, job: job),
-                  ))
-              .toList();
-          return ListView(
-            children: children,
-          );
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text("Some error has occurred"),
-          );
-        }
-        return Center(
-          child: CircularProgressIndicator(),
+        return ListItemBuilder<Job>(
+          snapshot: snapshot,
+          itemBuilder: (context, job) => Dismissible(
+            onDismissed: (direction) => _delete(context, job),
+            key: Key('job-${job.id}'),
+            background: Container(
+              color: Colors.red,
+            ),
+            direction: DismissDirection.endToStart,
+            child: JobListTile(
+              job: job,
+              onTap: () => EditJobsPage.show(context, job: job),
+            ),
+          ),
         );
       },
     );

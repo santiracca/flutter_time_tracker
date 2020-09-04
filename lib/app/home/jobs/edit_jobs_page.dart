@@ -56,6 +56,9 @@ class _EditJobPageState extends State<EditJobsPage> {
       try {
         final jobs = await widget.database.jobsStream().first;
         final allNames = jobs.map((job) => job.name).toList();
+        if (widget.job != null) {
+          allNames.remove(widget.job.name);
+        }
         if (allNames.contains(_name)) {
           PlatformAlertDialog(
             title: 'Name already used',
