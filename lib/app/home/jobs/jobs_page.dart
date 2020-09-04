@@ -1,14 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:timeTracker/common/firestore_exception_dialog.dart';
+import 'package:timeTracker/app/home/jobs/edit_jobs_page.dart';
+import 'package:timeTracker/app/home/jobs/job_list_tile.dart';
 import 'package:timeTracker/common/platform_alert_dialog.dart';
-import 'package:timeTracker/common/platform_exception_alert_dialog.dart';
 import 'package:timeTracker/services/auth.dart';
 import 'package:timeTracker/services/database.dart';
 
-import 'models/job.dart';
+import '../models/job.dart';
 
 class JobsPage extends StatelessWidget {
   Future<void> _signout(BuildContext context) async {
@@ -32,16 +30,6 @@ class JobsPage extends StatelessWidget {
     }
   }
 
-  Future<void> _createJob(BuildContext context) async {
-    try {
-      final datatbase = Provider.of<Database>(context, listen: false);
-      await datatbase.createJob(Job(name: 'Blogging', ratePerHour: 10));
-    } on FirebaseException catch (e) {
-      FirebaseExceptionAlertDialog(title: 'Operation failed', exception: e)
-          .show(context);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,9 +45,8 @@ class JobsPage extends StatelessWidget {
           )
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _createJob(context),
+        onPressed: () => EditJobsPage.show(context),
         child: Icon(Icons.add),
       ),
       body: _buildContents(context),
@@ -73,7 +60,12 @@ class JobsPage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final jobs = snapshot.data;
-          final children = jobs.map((job) => Text(job.name)).toList();
+          final children = jobs
+              .map((job) => JobListTile(
+                    job: job,
+                    onTap: () => EditJobsPage.show(context, job: job),
+                  ))
+              .toList();
           return ListView(
             children: children,
           );

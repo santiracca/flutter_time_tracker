@@ -2,19 +2,21 @@ import 'package:flutter/foundation.dart';
 
 class Job {
   Job({
+    @required this.id,
     @required this.name,
     @required this.ratePerHour,
   });
+  final String id;
   final String name;
   final int ratePerHour;
 
-  factory Job.fromMap(Map<String, dynamic> data) {
+  factory Job.fromMap(Map<String, dynamic> data, String id) {
     if (data == null) {
       return null;
     }
     final String name = data['name'];
     final int ratePerHour = data['ratePerHour'];
-    return Job(name: name, ratePerHour: ratePerHour);
+    return Job(name: name, ratePerHour: ratePerHour, id: id);
   }
 
   Map<String, dynamic> toMap() {
