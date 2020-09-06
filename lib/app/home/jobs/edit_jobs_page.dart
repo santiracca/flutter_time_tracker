@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:timeTracker/app/home/models/job.dart';
 import 'package:timeTracker/common/firestore_exception_dialog.dart';
 import 'package:timeTracker/common/platform_alert_dialog.dart';
@@ -12,8 +11,8 @@ class EditJobsPage extends StatefulWidget {
 
   const EditJobsPage({Key key, @required this.database, @required this.job})
       : super(key: key);
-  static Future<void> show(BuildContext context, {Job job}) async {
-    final database = Provider.of<Database>(context, listen: false);
+  static Future<void> show(BuildContext context, Database database,
+      {Job job}) async {
     await Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => EditJobsPage(
         database: database,
